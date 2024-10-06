@@ -11,6 +11,8 @@
 - Giant Jupiter(ISO ka openhiemer) -> Python
 - Godfather -> Python & JS
 - Spooky -> Python
+- Sovietfowl -> Python & JS
+- Purple -> Python
 - Cheemonster & Enchanted -> Project Manager (Add easter eggs for both)
 
 
