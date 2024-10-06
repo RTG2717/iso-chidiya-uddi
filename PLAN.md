@@ -17,7 +17,7 @@
 # Flow
 
 1. Send a unique link -> Add the people -> let people choose their name
-2. 1 minute time limit -> add as many prompts as you can, with their answers, convert each prompt to lowercase -> remove duplicate prompts + randomise each prompt for each player (*we need to save each user's each prompt till the end of game, maybe keep it in some 2D array or something*)
+2. 1 minute time limit -> add as many prompts as you can, with their answers, convert each prompt to lowercase -> andomise each prompt for each player (*we need to save each user's each prompt till the end of game, maybe keep it in some 2D array or something*)
 3. for each prompt -> give 2sec to the player to do uddi/not-uddi -> give strike to players who gave wrong answer (+(3 - num_of_strike) point for correct answer, +1.5 for elimination via prompt) -> if strikes == 3 then remove finger of that player
 4. Repeat from step-3 till all prompts are over OR only one player is left
 5. Repeat from step-2 till only one player is left (eliminated players can add prompts but can't finger)
@@ -34,3 +34,4 @@
 - give user the choice to set all the time limits
 - Deployyyyyyyyyyy
 - _Make it a AI powered Chidiya Uddi_
+- remove duplicate prompts
