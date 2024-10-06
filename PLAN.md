@@ -35,5 +35,6 @@
 
 - give user the choice to set all the time limits
 - Deployyyyyyyyyyy
+- Discord Integration ??
 - _Make it a AI powered Chidiya Uddi_
-- remove duplicate prompts
+- remove duplicate prompts ??
