@@ -9,3 +9,4 @@ If you make GPT write all the code for your PRs, then _aandi mandi sandi..._ app
 # File system
 
 https://youtu.be/-aqUek49iL8?feature=shared&t=420
+We'll follow this file system.
