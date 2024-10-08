@@ -1,7 +1,6 @@
 # Technologies
 
-- Frontend: React/Vite
-- Backend: Python/Flask
+- React/Vite
 
 # Skills
 
