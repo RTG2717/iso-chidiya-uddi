@@ -1,6 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 
+const API_URL = 'http://localhost:5000';
+const WS_URL = 'ws://localhost:5000/ws';
+
 const CursorTracker = () => {
     const [cursors, setCursors] = useState(new Map());
     const [ws, setWs] = useState(null);
@@ -19,24 +22,39 @@ const CursorTracker = () => {
             let activeSessionID = urlSessionID;
 
             if (!activeSessionID) {
-                console.log('No Active session found, making a new one');
                 // Create new session
-                const response = await axios.post(
-                    'http://localhost:5000/api/sessions/'
-                );
+                const response = await axios.post(`${API_URL}/api/sessions`);
                 activeSessionID = response.data.sessionID;
             }
 
-            // Get Username
-            const userNameEntered = `User123`;
-            setUserName(userNameEntered);
+            // Get username
+            const userName = `User-${Math.floor(Math.random() * 1000)}`;
+            setUserName(userName);
 
-            // Initialize WebSocket
-            const ws_init = new WebSocket(
-                `ws://localhost:5000?sessionID=${activeSessionID}&userName=${userNameEntered}`
-            );
+            // Initialize WebSocket connection
+            console.log('Initializing WebSocket connection...');
+            const wsUrl = `${WS_URL}?sessionID=${activeSessionID}&userName=${encodeURIComponent(
+                userName
+            )}`;
+            console.log('WebSocket URL:', wsUrl);
 
-            setWs(ws_init);
+            const socket = new WebSocket(wsUrl);
+
+            socket.onopen = () => {
+                console.log('WebSocket connection established');
+                setIsConnecting(false);
+                setError(null);
+            };
+
+            socket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                setError(
+                    'Failed to connect. Please check your connection and try again.'
+                );
+                setIsConnecting(false);
+            };
+
+            setWs(socket);
             setSessionID(activeSessionID);
 
             // Update url with sessionID if not already there
@@ -44,11 +62,12 @@ const CursorTracker = () => {
                 window.history.pushState({}, '', `?session=${activeSessionID}`);
             }
 
-            return ws;
+            return socket;
         } catch (error) {
             console.error('Error initializing session: ', error);
             setError('Failed connection. Please Try again.');
             setIsConnecting(false);
+            return null;
         }
     };
 
@@ -120,7 +139,8 @@ const CursorTracker = () => {
 
     const handleMouseMove = useCallback(
         (e) => {
-            if (!ws || !clientID || !ws.readyState !== WebSocket.OPEN) return;
+            console.log('Mouse Moved!');
+            // if (!ws || !clientID || !ws.readyState !== WebSocket.OPEN) return;
 
             const position = {
                 x: e.clientX,
@@ -154,36 +174,7 @@ const CursorTracker = () => {
     }
 
     return (
-        <div className='relative w-full h-screen bg-gray-50'>
-            <div className='absolute inset-0' onMouseMove={handleMouseMove}>
-                {Array.from(cursors.entries()).map(
-                    ([id, data]) =>
-                        id !== clientID && (
-                            <div
-                                key={id}
-                                className='absolute pointer-events-none transition-all duration-100'
-                                style={{
-                                    left: data.position.x,
-                                    top: data.position.y,
-                                    transform: 'translate(-50%, -50%)',
-                                }}
-                            >
-                                <div className='relative'>
-                                    <svg
-                                        className='w-6 h-6 text-blue-500'
-                                        viewBox='0 0 24 24'
-                                        fill='currentColor'
-                                    >
-                                        <path d='M5.586 12.657l4.95 4.95a1 1 0 001.414 0l8.485-8.485a1 1 0 000-1.414L15.657 2.93a1 1 0 00-1.414 0L5.586 11.243a1 1 0 000 1.414z' />
-                                    </svg>
-                                    <div className='absolute top-6 left-0 px-2 py-1 bg-blue-500 text-white text-xs rounded whitespace-nowrap'>
-                                        {data.username}
-                                    </div>
-                                </div>
-                            </div>
-                        )
-                )}
-            </div>
+        <div className='absolute inset-0 overflow-hidden'>
             <div className='absolute top-4 right-4 bg-white p-4 rounded-lg shadow'>
                 <div className='text-sm font-medium'>
                     Session ID: {sessionID}
@@ -199,6 +190,31 @@ const CursorTracker = () => {
                 >
                     Copy URL
                 </button>
+            </div>
+            <div
+                className='border-red-600  absolute inset-0 w-full h-full bg-gray-50'
+                onMouseMove={handleMouseMove}
+                style={{ minHeight: '100vh' }}
+            >
+                {Array.from(cursors.entries()).map(([id, data]) => (
+                    <div
+                        key={id}
+                        className='absolute dot pointer-events-none transition-all duration-100'
+                        style={{
+                            left: data.position.x,
+                            top: data.position.y,
+                            transform: 'translate(-50%, -50%)',
+                            position: 'absolute',
+                        }}
+                    >
+                        <div className=''>
+                            {/* <div className=''></div> */}
+                            {/* <div className='absolute top-6 left-0 px-2 py-1 bg-blue-500 text-white text-xs rounded whitespace-nowrap'>
+                                {data.userName}
+                            </div> */}
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );

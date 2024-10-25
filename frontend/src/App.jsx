@@ -27,7 +27,7 @@ function App() {
     }, []);
 
     return (
-        <main>
+        <main className='h-screen w-full'>
             <CursorTracker />
             {/* <Navbar value={value} />
             <div className='flex flex-col items-center justify-center h-screen'>

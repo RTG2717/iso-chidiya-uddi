@@ -2,18 +2,41 @@ const express = require('express');
 const cors = require('cors');
 const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
+const http = require('http');
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-//Middlewares
-app.use(cors());
+// More specific CORS configuration
+app.use(
+    cors({
+        origin: 'http://localhost:3000', // Your React app's URL
+        methods: ['GET', 'POST'],
+        credentials: true,
+    })
+);
+
 app.use(express.json());
 
-// In memory storage
+// In-memory storage
 const sessions = new Map();
+const clients = new Map();
 
-// express Routes
+// Create HTTP server explicitly
+const server = http.createServer(app);
+
+// Configure WebSocket server with proper options
+const wss = new WebSocket.Server({
+    server,
+    path: '/ws', // Specify a path for WebSocket connections
+    verifyClient: (info) => {
+        // Log connection attempts
+        console.log('Connection attempt from:', info.origin);
+        return true; // Accept all connections for now
+    },
+});
+
+// Basic API routes
 app.post('/api/sessions', (req, res) => {
     try {
         const sessionID = uuidv4();
@@ -26,72 +49,43 @@ app.post('/api/sessions', (req, res) => {
             sessionID,
         });
     } catch (error) {
-        res.status(500).json({
-            error: error.message,
-        });
+        res.status(500).json({ error: error.message });
     }
 });
 
-app.get('api/sessions/:sessionID', (req, res) => {
+app.get('/api/sessions/:sessionID', (req, res) => {
     try {
         const session = sessions.get(req.params.sessionID);
         if (!session)
-            return res.status(404).json({
-                error: 'Session not found',
-            });
+            return res.status(404).json({ error: 'Session not found' });
         res.json(session);
     } catch (error) {
-        res.status(500).json({
-            error: error.message,
-        });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// Start Express Server
-const server = app.listen(port, () => {
-    console.log(`Port ${port} is listening for inputs`);
-});
-
-// Websocket Server
-const wss = new WebSocket.Server({
-    server,
-});
-const clients = new Map();
-
+// WebSocket connection handling
 wss.on('connection', (ws, req) => {
+    console.log('New WebSocket connection established');
+
     const clientID = uuidv4();
-    const sessionID = new URL(req.url, 'http://localhost').searchParams.get(
-        'sessionID'
-    );
-    const userName = new URL(req.url, 'http://localhost').searchParams.get(
-        'userName'
+    const params = new URL(req.url, 'http://localhost:5000').searchParams;
+    const sessionID = params.get('sessionID');
+    const username = params.get('username');
+
+    console.log(
+        `Client connected: ${clientID}, Session: ${sessionID}, Username: ${username}`
     );
 
-    // Storing Client Info
+    // Store client information
     clients.set(clientID, {
         ws,
         sessionID,
-        userName,
-        position: {
-            x: 0,
-            y: 0,
-        },
+        username,
+        position: { x: 0, y: 0 },
     });
 
-    // Update Session Data
-    const session = sessions.get(sessionID);
-    if (session) {
-        sessions?.users?.push({
-            clientID,
-            userName,
-            lastPosition: {
-                x: 0,
-                y: 0,
-            },
-            lastActive: new Date(),
-        });
-    }
-
+    // Send immediate confirmation
     ws.send(
         JSON.stringify({
             type: 'init',
@@ -100,73 +94,50 @@ wss.on('connection', (ws, req) => {
         })
     );
 
-    // Send current cursor positions to new client
-    const sessionClients = Array.from(clients.entries())
-        .filter(([_, client]) => client.sessionID === sessionID)
-        .map(([id, client]) => ({
-            clientID: id,
-            userName: client.userName,
-            position: client.position,
-        }));
-
-    ws.send(
-        JSON.stringify({
-            type: 'cursors',
-            cursors: sessionClients,
-        })
-    );
-
+    // Handle incoming messages
     ws.on('message', (message) => {
+        try {
         const data = JSON.parse(message);
+            console.log(`Received message from ${clientID}:`, data.type);
 
         if (data.type === 'position') {
             // Update stored position
             clients.get(clientID).position = data.position;
 
-            // Update session data
-            const sessionID = sessions.get(sessionID);
-            if (session) {
-                const user = session.users.find((u) => u.clientID === clientID);
-                if (user) {
-                    user.lastPosition = data.position;
-                    user.lastActive = new Date();
-                }
-            }
-
-            // Broadcast to all users in the session
+                // Broadcast to others in same session
             clients.forEach((client, id) => {
-                if (id !== clientID && client.sessionID !== sessionID) {
+                    if (
+                        id !== clientID &&
+                        client.sessionID === sessionID &&
+                        client.ws.readyState === WebSocket.OPEN
+                    ) {
                     client.ws.send(
                         JSON.stringify({
                             type: 'cursor',
-                            cliendID,
-                            userName,
+                                clientID,
+                                username,
                             position: data.position,
                         })
                     );
                 }
             });
+            }
+        } catch (error) {
+            console.error('Error handling message:', error);
         }
     });
 
+    // Handle disconnection
     ws.on('close', () => {
-        // Remove from session data
-        const session = sessions.get(sessionID);
-        if (session) {
-            session.users = session.users.filter(
-                (u) => u.clientID !== clientID
-            );
-        }
-        if (session?.users?.length === 0) {
-            sessions.delete(sessionID);
-        }
-
-        // Remove from clients
+        console.log(`Client disconnected: ${clientID}`);
         clients.delete(clientID);
 
-        // Broadcast disconnect to session clients
+        // Notify others in the same session
         clients.forEach((client) => {
-            if (client.sessionID === sessionID) {
+            if (
+                client.sessionID === sessionID &&
+                client.ws.readyState === WebSocket.OPEN
+            ) {
                 client.ws.send(
                     JSON.stringify({
                         type: 'disconnect',
@@ -177,19 +148,21 @@ wss.on('connection', (ws, req) => {
         });
     });
 
-    // Cleanup inactive clients periodically
-    const cleanup = setInterval(() => {
-        const now = new Date();
-        sessions.forEach((session, id) => {
-            const hasActiveUsers = session.users.some((user) => {
-                // 1 hour of inactivity
-                now - new Date(user.lastActive) < 1000 * 60 * 60;
-            });
-            if (!hasActiveUsers) {
-                sessions.delete(id);
-            }
-        });
-    }, 1000 * 60 * 60); // Runs every hour
+    // Handle errors
+    ws.on('error', (error) => {
+        console.error(`WebSocket error for client ${clientID}:`, error);
+    });
+});
 
-    ws.on('close', () => clearInterval(cleanup));
+// Start server
+server.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+    console.log(
+        `WebSocket server is ready for connections on ws://localhost:${port}/ws`
+    );
+});
+
+// Error handling for the server
+server.on('error', (error) => {
+    console.error('Server error:', error);
 });
