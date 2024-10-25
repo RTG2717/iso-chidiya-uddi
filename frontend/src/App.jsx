@@ -4,6 +4,7 @@ import Slider from './components/slider';
 import Navbar from './components/navbar';
 import Textbox from './components/textbox';
 import Timer from './components/timer';
+import CursorTracker from './components/cursorTracker';
 
 function App() {
     const [value, setValue] = useState(0);
@@ -27,12 +28,13 @@ function App() {
 
     return (
         <main>
-            <Navbar value={value} />
+            <CursorTracker />
+            {/* <Navbar value={value} />
             <div className='flex flex-col items-center justify-center h-screen'>
                 <Textbox chidiya={`chidiya ${chidiya}`} />
                 <Slider value={value} setValue={setValue} />
                 <Timer seconds={seconds} />
-            </div>
+            </div> */}
         </main>
     );
 }
