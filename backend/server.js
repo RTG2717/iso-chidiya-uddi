@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 // More specific CORS configuration
 app.use(
     cors({
-        origin: 'http://localhost:3000', // Your React app's URL
+        origin: [process.env.REACT_APP, 'http://localhost:3000'], // Your React app's URL
         methods: ['GET', 'POST'],
         credentials: true,
     })
@@ -97,30 +97,30 @@ wss.on('connection', (ws, req) => {
     // Handle incoming messages
     ws.on('message', (message) => {
         try {
-        const data = JSON.parse(message);
+            const data = JSON.parse(message);
             console.log(`Received message from ${clientID}:`, data.type);
 
-        if (data.type === 'position') {
-            // Update stored position
-            clients.get(clientID).position = data.position;
+            if (data.type === 'position') {
+                // Update stored position
+                clients.get(clientID).position = data.position;
 
                 // Broadcast to others in same session
-            clients.forEach((client, id) => {
+                clients.forEach((client, id) => {
                     if (
                         id !== clientID &&
                         client.sessionID === sessionID &&
                         client.ws.readyState === WebSocket.OPEN
                     ) {
-                    client.ws.send(
-                        JSON.stringify({
-                            type: 'cursor',
+                        client.ws.send(
+                            JSON.stringify({
+                                type: 'cursor',
                                 clientID,
                                 username,
-                            position: data.position,
-                        })
-                    );
-                }
-            });
+                                position: data.position,
+                            })
+                        );
+                    }
+                });
             }
         } catch (error) {
             console.error('Error handling message:', error);
