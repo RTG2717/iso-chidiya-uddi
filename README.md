@@ -12,7 +12,17 @@ A multiplayer [Chidiya Uddi](https://dsource.in/resource/indian-games/indoor-gam
 ## Prerequisites
 
 1. [Node.js](https://nodejs.org/en)
-2. A text editor
+2. A text editor [[Visual Studio Code](https://code.visualstudio.com/download) recommended]
+
+### Prettier
+
+##### (how to use)
+
+1. Download prettier extension in VS Code.
+1. Go to Settings (Ctrl+,) and set Format on save to `yes`.
+1. Save files which need formatting. These files will be formatted according to the config in `.prettierrc` file.
+
+> Note: Always format before raising PR.
 
 ## Frontend
 
