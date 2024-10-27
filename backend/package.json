@@ -3,9 +3,16 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "build": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "backend for chidiya-uddi-app",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "uuid": "^10.0.0",
+    "ws": "^8.18.0"
+  }
 }
