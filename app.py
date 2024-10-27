@@ -16,7 +16,7 @@ screen = pygame.display.set_mode((w, h))
 pygame.display.set_caption("IndiaSocial: Chidiya Udd")
 clock = pygame.time.Clock()
 
-# Fonts (may need to download
+# Fonts (may need to download Kirang Haerang) and keep it in "fonts" folder, which will be in the same place as the python program
 prompt_text = pygame.font.Font('fonts/KirangHaerang-Regular.ttf', 27*(int(w/90+h/130))//12)
 
 # Background 
