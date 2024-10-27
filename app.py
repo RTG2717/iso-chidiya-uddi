@@ -1,18 +1,19 @@
 import pygame
 from sys import exit
 
-pygame.init()
-screen = pygame.display.set_mode((800, 400))
-pygame.display.set_caption("IndiaSocial: Chidiya Udd")
-clock = pygame.time.Clock()
-
 w = 800
 h = 400
+
+pygame.init()
+screen = pygame.display.set_mode((w, h))
+pygame.display.set_caption("IndiaSocial: Chidiya Udd")
+clock = pygame.time.Clock()
 
 bg = pygame.Surface((w, h))
 bg.fill((251,176,59))
 prompt_box = pygame.Surface((w/4,h/10))
 answer_box = pygame.Surface((w/4,h/10))
+# table = pygame.Surface((w/
 
 while True:
     for event in pygame.event.get():
