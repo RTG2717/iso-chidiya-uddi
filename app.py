@@ -47,7 +47,6 @@ while True:
     screen.blit(table, table_rect)
     # screen.blit(answer_box, answer_rect)
     screen.blit(prompt_box, prompt_rect)
-    # screen.blit(font_render, ((w/8*3), h - h/16*2 - h/10))
     screen.blit(font_render, font_rect)
     pygame.display.update()
     clock.tick(60)
