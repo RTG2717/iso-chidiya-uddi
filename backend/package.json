@@ -1,18 +1,19 @@
 {
-  "name": "chidiya-uddi-backend",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "build": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "description": "backend for chidiya-uddi-app",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.21.1",
-    "uuid": "^10.0.0",
-    "ws": "^8.18.0"
-  }
+    "name": "chidiya-uddi-backend",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "build": "nodemon server.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "description": "backend for chidiya-uddi-app",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "express": "^4.21.1",
+        "nodemon": "^3.1.7",
+        "uuid": "^10.0.0",
+        "ws": "^8.18.0"
+    }
 }
