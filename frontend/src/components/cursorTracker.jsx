@@ -139,8 +139,7 @@ const CursorTracker = () => {
 
     const handleMouseMove = useCallback(
         (e) => {
-            console.log('Mouse Moved!');
-            // if (!ws || !clientID || !ws.readyState !== WebSocket.OPEN) return;
+            if (!ws || !clientID || ws.readyState !== WebSocket.OPEN) return;
 
             const position = {
                 x: e.clientX,
