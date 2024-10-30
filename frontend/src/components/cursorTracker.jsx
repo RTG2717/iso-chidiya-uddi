@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 
-const API_URL = import.meta.env.API_URL;
-const WS_URL = import.meta.env.WS_URL;
+const API_URL = import.meta.env.VITE_API_URL;
+const WS_URL = import.meta.env.VITE_WS_URL;
 
 const CursorTracker = () => {
     const [cursors, setCursors] = useState(new Map());
@@ -140,7 +140,7 @@ const CursorTracker = () => {
     const handleMouseMove = useCallback(
         (e) => {
             console.log('Mouse Moved!');
-            if (!ws || !clientID || !ws.readyState !== WebSocket.OPEN) return;
+            // if (!ws || !clientID || !ws.readyState !== WebSocket.OPEN) return;
 
             const position = {
                 x: e.clientX,

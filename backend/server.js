@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
-const http = require('http');
+const selectedServer = require('http');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -23,7 +23,9 @@ const sessions = new Map();
 const clients = new Map();
 
 // Create HTTP server explicitly
-const server = http.createServer(app);
+// const selectedServer = process.env.NODE_ENV === 'localhost' ? http : httpServ;
+// console.log('Selected Server', selectedServer);
+const server = selectedServer.createServer(app);
 
 // Configure WebSocket server with proper options
 const wss = new WebSocket.Server({
@@ -37,6 +39,9 @@ const wss = new WebSocket.Server({
 });
 
 // Basic API routes
+app.get('/', (req, res) => {
+    res.send('Server ready to respond.');
+});
 app.post('/api/sessions', (req, res) => {
     try {
         const sessionID = uuidv4();

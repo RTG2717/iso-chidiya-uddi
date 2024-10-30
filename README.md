@@ -5,7 +5,6 @@ A multiplayer [Chidiya Uddi](https://dsource.in/resource/indian-games/indoor-gam
 # Contribution Rules
 
 1. Simple: fork the repo, make meaningful and valuable code updates, create a pr.
-2. If you make GPT write all the code for your PRs, then _aandi mandi sandi..._ applies!
 
 # Usage Guide
 
@@ -42,6 +41,12 @@ npm run dev
 
 ## Backend
 
-All backend part is housed in `./backend/`, ensure that you have all the pre-requisites installed on your system.
+Install all prerequisites in system.
+
+To run the current version of backend:
+
+1. Run navigate to the backend folder. `[BASE_DIR]/backend/`
+1. Run the command
+    > node server.js
 
 (Backend is still under development)
