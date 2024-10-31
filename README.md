@@ -27,17 +27,23 @@ A multiplayer [Chidiya Uddi](https://dsource.in/resource/indian-games/indoor-gam
 
 All frontend part is housed in `./frontend/`, ensure that you have all the pre-requisites installed on your system.
 
+### Installation
+
 1. Install packages:
 
-```
-npm ci
-```
+    ```
+    npm ci
+    ```
 
-2. Start Development Server:
+1. Install the tailwind configuration: follow the steps in [this guide](https://tailwindcss.com/docs/guides/vite)
 
-```
-npm run dev
-```
+### Running the Code
+
+1. Start Development Server:
+
+    ```
+    npm run dev
+    ```
 
 ## Backend
 
