@@ -173,7 +173,10 @@ const CursorTracker = () => {
     }
 
     return (
-        <div className='absolute inset-0 overflow-hidden'>
+        <div
+            className='absolute inset-0 overflow-hidden'
+            onMouseMove={handleMouseMove}
+        >
             <div className='absolute top-4 right-4 bg-white p-4 rounded-lg shadow'>
                 <div className='text-sm font-medium'>
                     Session ID: {sessionID}
@@ -190,18 +193,15 @@ const CursorTracker = () => {
                     Copy URL
                 </button>
             </div>
-            <div
-                className='border-red-600  absolute inset-0 w-full h-full bg-gray-50'
-                onMouseMove={handleMouseMove}
-                style={{ minHeight: '100vh' }}
-            >
+            <div className='border border-red-600  absolute inset-0 w-full h-full bg-sky-100 -z-10'>
                 {Array.from(cursors.entries()).map(([id, data]) => (
                     <div
                         key={id}
-                        className='absolute dot pointer-events-none transition-all duration-100'
+                        className='absolute dot pointer-events-none transition-all duration-100 z-0'
                         style={{
                             left: data.position.x,
                             top: data.position.y,
+                            borderColor: `rgba(1,1,255,0.6)`,
                             transform: 'translate(-50%, -50%)',
                             position: 'absolute',
                         }}

@@ -11,6 +11,17 @@ function App() {
     const [seconds, setSeconds] = useState(2);
     const [chidiya, setChidiya] = useState(1); // only for testing, edit this functionality later
 
+    // Code Snippet to make console.log visible only if sl set to true in Local Storage
+    const showLogs = localStorage.getItem('sl') ?? false;
+
+    if (!showLogs) {
+        const fn = () => {};
+
+        ['log'].forEach((method) => {
+            console[method] = fn;
+        });
+    }
+
     useEffect(() => {
         if (seconds == 0) {
             setSeconds(2);
