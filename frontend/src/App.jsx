@@ -11,6 +11,16 @@ function App() {
     const [seconds, setSeconds] = useState(2);
     const [chidiya, setChidiya] = useState(1); // only for testing, edit this functionality later
 
+    const showLogs = localStorage.getItem('sl') ?? false;
+
+    if (!showLogs) {
+        const fn = () => {};
+
+        ['log'].forEach((method) => {
+            console[method] = fn;
+        });
+    }
+
     useEffect(() => {
         if (seconds == 0) {
             setSeconds(2);
