@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Input from './Input';
+import Input from '../Input';
 import { useNavigate } from 'react-router-dom';
 
 const UsernameForm = () => {

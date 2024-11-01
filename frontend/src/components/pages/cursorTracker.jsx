@@ -193,7 +193,7 @@ const CursorTracker = () => {
                     Copy URL
                 </button>
             </div>
-            <div className='border border-red-600  absolute inset-0 w-full h-full bg-sky-100 -z-10'>
+            <div className='absolute inset-0 w-full h-full bg-sky-100 -z-10'>
                 {Array.from(cursors.entries()).map(([id, data]) => (
                     <div
                         key={id}
@@ -205,14 +205,7 @@ const CursorTracker = () => {
                             transform: 'translate(-50%, -50%)',
                             position: 'absolute',
                         }}
-                    >
-                        <div className=''>
-                            {/* <div className=''></div> */}
-                            {/* <div className='absolute top-6 left-0 px-2 py-1 bg-blue-500 text-white text-xs rounded whitespace-nowrap'>
-                                {data.userName}
-                            </div> */}
-                        </div>
-                    </div>
+                    ></div>
                 ))}
             </div>
         </div>
