@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Input from './Input';
 import { useNavigate } from 'react-router-dom';
-// import { H1 } from 'tailwindcss';
 
 const UsernameForm = () => {
     const [userName, setUserName] = useState('');
