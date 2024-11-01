@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Input = ({ ...inputData }) => {
     let baseCSS = ``;
     const cssMargins = `px-2 py-1 rounded-md`;
