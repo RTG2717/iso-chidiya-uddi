@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import CursorTracker from './cursorTracker';
-import UsernameForm from './UsernameForm';
+import CursorTracker from './pages/cursorTracker';
+import UsernameForm from './pages/UsernameForm';
 
 const Layout = () => {
     return (
