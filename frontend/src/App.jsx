@@ -16,9 +16,7 @@ function App() {
 
     return (
         <Router>
-            <div className='h-screen bg-slate-200 text-slate-800'>
-                <Layout />
-            </div>
+            <Layout />
         </Router>
     );
 }
