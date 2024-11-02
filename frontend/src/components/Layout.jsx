@@ -9,6 +9,7 @@ const Layout = () => {
             <Route path='/' element={<Home />} />
             <Route path='/track' element={<CursorTracker />} />
             <Route path='/create-new-lobby' element={<UsernameForm />} />
+            <Route path='/join-lobby' element={<UsernameForm />} />
         </Routes>
     );
 };
