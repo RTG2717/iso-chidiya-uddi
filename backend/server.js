@@ -45,13 +45,23 @@ app.get('/', (req, res) => {
 app.post('/api/sessions', (req, res) => {
     try {
         const sessionID = uuidv4();
+        let sessionCode = '';
+        do {
+            sessionCode = uuidv4().substring(0, 4).toUpperCase();
+            const allSessions = Array.from(sessions.values()).flat();
+            matchingCodeExists = allSessions.some(
+                (s) => s.sessionCode === sessionCode
+            );
+        } while (matchingCodeExists);
         sessions.set(sessionID, {
             sessionID,
+            sessionCode,
             users: [],
             createdAt: new Date(),
         });
         res.json({
             sessionID,
+            sessionCode,
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
