@@ -9,6 +9,7 @@ const CursorTracker = () => {
     const [ws, setWs] = useState(null);
     const [clientID, setClientID] = useState(null);
     const [sessionID, setSessionID] = useState(null);
+    const [sessionCode, setSessionCode] = useState(null);
     const [userName, setUserName] = useState('');
     const [isConnecting, setIsConnecting] = useState(true);
     const [error, setError] = useState(null);
@@ -25,6 +26,7 @@ const CursorTracker = () => {
                 // Create new session
                 const response = await axios.post(`${API_URL}/api/sessions`);
                 activeSessionID = response.data.sessionID;
+                setSessionCode(response.data.sessionCode);
             }
 
             // Get username
@@ -179,10 +181,10 @@ const CursorTracker = () => {
         >
             <div className='absolute top-4 right-4 bg-white p-4 rounded-lg shadow'>
                 <div className='text-sm font-medium'>
-                    Session ID: {sessionID}
+                    Session Code: {sessionCode}
                 </div>
                 <div className='text-xs text-gray-500 mt-1'>
-                    Share this URL to invite others
+                    Share the URL or above code to invite others
                 </div>
                 <button
                     onClick={() =>
@@ -191,6 +193,12 @@ const CursorTracker = () => {
                     className='mt-2 px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
                 >
                     Copy URL
+                </button>
+                <button
+                    onClick={() => navigator.clipboard.writeText(sessionCode)}
+                    className='mt-2 mx-2 px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
+                >
+                    Copy Code
                 </button>
             </div>
             <div className='absolute inset-0 w-full h-full bg-sky-100 -z-10'>
