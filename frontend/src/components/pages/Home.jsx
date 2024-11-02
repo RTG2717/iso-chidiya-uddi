@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import JoinSessionForm from '../JoinSessionForm';
 import Input from '../Input';
+import AppTitle from '../AppTitle';
+import PageContainer from '../PageContainer';
 
 const Home = () => {
     const [isJoining, setIsJoining] = useState(false);
@@ -12,8 +14,9 @@ const Home = () => {
         setIsJoining(!isJoining);
     };
     return (
-        <div className='flex flex-auto flex-col mx-16'>
-            <div className='text-4xl text-center'>Home Page</div>
+        <PageContainer>
+            <AppTitle />
+            <div className='text-3xl text-center'>Home Page</div>
             <div className='mt-10 text-center'>
                 <Link to='/create-new-lobby'>
                     <Input type='button' value='Create a new Lobby' />
@@ -28,7 +31,7 @@ const Home = () => {
                     value={isJoining ? 'Close' : 'Join an exiting Lobby'}
                 />
             </div>
-        </div>
+        </PageContainer>
     );
 };
 

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import Input from '../Input';
 import { useNavigate } from 'react-router-dom';
+import AppTitle from '../AppTitle';
+import PageContainer from '../PageContainer';
 
 const UsernameForm = () => {
     const [userName, setUserName] = useState('');
@@ -18,11 +20,9 @@ const UsernameForm = () => {
     return (
         <>
             <form>
-                <div className='flex flex-auto min-h-full flex-col justify-center px-6 py-12 lg:px8'>
+                <PageContainer>
                     <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
-                        <div className='text-center text-4xl font-bold'>
-                            Chidiya Udd Game
-                        </div>
+                        <AppTitle />
                     </div>
                     <div className='mt-10 text-center text-2xl/9'>
                         <label htmlFor='username'></label>
@@ -53,7 +53,7 @@ const UsernameForm = () => {
                             className='ml-2'
                         />
                     </div>
-                </div>
+                </PageContainer>
             </form>
         </>
     );
