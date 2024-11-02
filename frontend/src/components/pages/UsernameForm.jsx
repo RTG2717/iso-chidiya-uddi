@@ -16,6 +16,7 @@ const UsernameForm = () => {
         e.preventDefault();
 
         // add script to call a post to submit username to backend
+        navigate('/track');
     };
     return (
         <>
