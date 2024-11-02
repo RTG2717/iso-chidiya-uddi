@@ -75,6 +75,17 @@ app.post('/api/sessions', (req, res) => {
     }
 });
 
+app.get('/api/sessions_by_code/:sessionCode', (req, res) => {
+    try {
+        const session = sessionsByCode.get(req.params.sessionCode);
+        if (!session)
+            return res.status(404).json({ error: 'Session not found' });
+        res.json(session);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.get('/api/sessions/:sessionID', (req, res) => {
     try {
         const session = sessionsByID.get(req.params.sessionID);
