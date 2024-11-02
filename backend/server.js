@@ -47,11 +47,12 @@ app.post('/api/sessions', (req, res) => {
     try {
         const sessionID = uuidv4();
         let sessionCode = uuidv4().substring(0, 4).toUpperCase();
+        matchingCode = sessionsByCode.get(sessionCode);
 
-        do {
-            matchingCodeExists = sessionsByCode.get(sessionCode);
-            console.log(matchingCodeExists);
-        } while (matchingCodeExists !== undefined);
+        while (matchingCode) {
+            matchingCode = sessionsByCode.get(sessionCode);
+            sessionCode = uuidv4().substring(0, 4).toUpperCase();
+        }
 
         sessionsByID.set(sessionID, {
             sessionID,
