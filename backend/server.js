@@ -88,10 +88,6 @@ wss.on('connection', (ws, req) => {
     const sessionID = params.get('sessionID');
     const username = params.get('username');
 
-    console.log(
-        `Client connected: ${clientID}, Session: ${sessionID}, Username: ${username}`
-    );
-
     // Store client information
     clients.set(clientID, {
         ws,
@@ -113,7 +109,6 @@ wss.on('connection', (ws, req) => {
     ws.on('message', (message) => {
         try {
             const data = JSON.parse(message);
-            console.log(`Received message from ${clientID}:`, data.type);
 
             if (data.type === 'position') {
                 // Update stored position
