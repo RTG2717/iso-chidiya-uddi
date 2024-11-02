@@ -8,9 +8,7 @@ const CursorTracker = () => {
     const [cursors, setCursors] = useState(new Map());
     const [ws, setWs] = useState(null);
     const [clientID, setClientID] = useState(null);
-    const [sessionID, setSessionID] = useState(null);
     const [sessionCode, setSessionCode] = useState(null);
-    const [userName, setUserName] = useState('');
     const [isConnecting, setIsConnecting] = useState(true);
     const [error, setError] = useState(null);
 
@@ -31,7 +29,6 @@ const CursorTracker = () => {
 
             // Get username
             const userName = `User-${Math.floor(Math.random() * 1000)}`;
-            setUserName(userName);
 
             // Initialize WebSocket connection
             console.log('Initializing WebSocket connection...');
@@ -57,7 +54,6 @@ const CursorTracker = () => {
             };
 
             setWs(socket);
-            setSessionID(activeSessionID);
 
             // Update url with sessionID if not already there
             if (!urlSessionID) {
