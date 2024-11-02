@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import Input from '../Input';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AppTitle from '../AppTitle';
 import PageContainer from '../PageContainer';
 
 const UsernameForm = () => {
-    const [userName, setUserName] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const session = location.state.session;
 
     const handleUpdateUserName = (e) => {
         console.log('name changed', e.target.value);
