@@ -19,7 +19,8 @@ app.use(
 app.use(express.json());
 
 // In-memory storage
-const sessions = new Map();
+const sessionsByID = new Map();
+const sessionsByCode = new Map();
 const clients = new Map();
 
 // Create HTTP server explicitly
@@ -45,15 +46,20 @@ app.get('/', (req, res) => {
 app.post('/api/sessions', (req, res) => {
     try {
         const sessionID = uuidv4();
-        let sessionCode = '';
+        let sessionCode = uuidv4().substring(0, 4).toUpperCase();
+
         do {
-            sessionCode = uuidv4().substring(0, 4).toUpperCase();
-            const allSessions = Array.from(sessions.values()).flat();
-            matchingCodeExists = allSessions.some(
-                (s) => s.sessionCode === sessionCode
-            );
-        } while (matchingCodeExists);
-        sessions.set(sessionID, {
+            matchingCodeExists = sessionsByCode.get(sessionCode);
+            console.log(matchingCodeExists);
+        } while (matchingCodeExists !== undefined);
+
+        sessionsByID.set(sessionID, {
+            sessionID,
+            sessionCode,
+            users: [],
+            createdAt: new Date(),
+        });
+        sessionsByCode.set(sessionCode, {
             sessionID,
             sessionCode,
             users: [],
@@ -70,7 +76,7 @@ app.post('/api/sessions', (req, res) => {
 
 app.get('/api/sessions/:sessionID', (req, res) => {
     try {
-        const session = sessions.get(req.params.sessionID);
+        const session = sessionsByID.get(req.params.sessionID);
         if (!session)
             return res.status(404).json({ error: 'Session not found' });
         res.json(session);
