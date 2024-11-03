@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 // More specific CORS configuration
 app.use(
     cors({
-        origin: [process.env.REACT_APP, 'http://localhost:3000'], // Your React app's URL
+        origin: [process.env.REACT_APP], // Your React app's URL
         methods: ['GET', 'POST'],
         credentials: true,
     })
@@ -87,7 +87,7 @@ wss.on('connection', (ws, req) => {
         ws,
         sessionID,
         username,
-        position: { x: 0, y: 0 },
+        fingerUp: false,
     });
 
     // Send immediate confirmation
@@ -107,7 +107,7 @@ wss.on('connection', (ws, req) => {
 
             if (data.type === 'position') {
                 // Update stored position
-                clients.get(clientID).position = data.position;
+                clients.get(clientID).fingerUp = data.fingerUp;
 
                 // Broadcast to others in same session
                 clients.forEach((client, id) => {
@@ -118,10 +118,10 @@ wss.on('connection', (ws, req) => {
                     ) {
                         client.ws.send(
                             JSON.stringify({
-                                type: 'cursor',
+                                type: 'fingerChange',
                                 clientID,
                                 username,
-                                position: data.position,
+                                fingerUp: data.fingerUp,
                             })
                         );
                     }
