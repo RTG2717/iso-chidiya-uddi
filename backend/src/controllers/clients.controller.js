@@ -8,8 +8,13 @@ const createUser = async (req, res) => {
 
         res.status(200).json(user);
     } catch (error) {
-        console.error('Unexpected error occurred', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        if (error === 'Session not found') {
+            console.error('Session not found');
+            res.status(404).json({ error: 'Requested session not found' });
+        } else {
+            console.error('Unexpected error occurred', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
     }
 };
 

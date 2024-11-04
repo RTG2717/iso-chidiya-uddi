@@ -50,11 +50,14 @@ const deleteSession = (sessionID) => {
 
 const addClienttoSession = (clientID, sessionID) => {
     console.log('Session Client combo: ', clientID, sessionID);
-    const sessionbyID = sessionsByID.get(sessionID);
+    const session = sessionsByID.get(sessionID);
+    if (!session) {
+        throw 'Session not found';
+    }
 
-    sessionbyID.users.push(clientID);
+    session.users.push(clientID);
 
-    return sessionbyID;
+    return session;
 };
 
 module.exports = {
