@@ -1,0 +1,4 @@
+.env
+.vscode
+# Certificates folder for local https testing
+certificates/*
