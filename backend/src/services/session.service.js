@@ -48,9 +48,19 @@ const deleteSession = (sessionID) => {
     }
 };
 
+const addClienttoSession = (clientID, sessionID) => {
+    console.log('Session Client combo: ', clientID, sessionID);
+    const sessionbyID = sessionsByID.get(sessionID);
+
+    sessionbyID.users.push(clientID);
+
+    return sessionbyID;
+};
+
 module.exports = {
     createSession,
     getSessionbyID,
     getSessionbyCode,
     deleteSession,
+    addClienttoSession,
 };
