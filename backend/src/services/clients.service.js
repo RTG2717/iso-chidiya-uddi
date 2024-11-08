@@ -15,6 +15,11 @@ const createUser = (userName, sessionID) => {
     return newClient;
 };
 
+const getUser = (clientID) => {
+    return clients.get(clientID) || null;
+};
+
 module.exports = {
     createUser,
+    getUser,
 };
