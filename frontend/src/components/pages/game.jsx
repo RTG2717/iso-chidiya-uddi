@@ -1,17 +1,58 @@
 import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
+import Navbar from '../navbar';
+import Textbox from '../textbox';
+import Slider from '../slider';
+import Timer from '../timer';
+import OtherUserFingerDisplay from '../otherUserFingersDisplay';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:5000/ws';
 
-const CursorTracker = () => {
-    const [cursors, setCursors] = useState(new Map());
+const Game = () => {
     const [ws, setWs] = useState(null);
     const [clientID, setClientID] = useState(null);
     const [sessionID, setSessionID] = useState(null);
     const [userName, setUserName] = useState('');
     const [isConnecting, setIsConnecting] = useState(true);
     const [error, setError] = useState(null);
+
+    const [value, setValue] = useState(0);
+    const [seconds, setSeconds] = useState(2);
+    const [chidiya, setChidiya] = useState(1);
+    const [fingerUp, setFingerUp] = useState(false);
+    const [otherUserFingers, setOtherUserFingers] = useState(new Map());
+
+    useEffect(() => {
+        if (seconds == 0) {
+            setSeconds(2);
+            setChidiya(chidiya + 1);
+        }
+    }, [seconds]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setSeconds((seconds) => (seconds > 0 ? seconds - 1 : 0));
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        if (value < 69 && fingerUp !== false) setFingerUp(false);
+        else if (value >= 69 && fingerUp !== true) setFingerUp(true);
+    }, [value]);
+
+    useEffect(() => {
+        if (!ws || !clientID || ws.readyState !== WebSocket.OPEN) return;
+
+        ws.send(
+            JSON.stringify({
+                type: 'position',
+                fingerUp: fingerUp,
+            })
+        );
+    }, [fingerUp]);
 
     const initializeSession = async () => {
         try {
@@ -87,30 +128,21 @@ const CursorTracker = () => {
                         setIsConnecting(false);
                         setError(null);
                         break;
-                    case 'cursors': {
-                        const cursorMap = new Map(); // Brackets introduced to remove no-case declaration error
-                        data.cursors.forEach((cursor) => {
-                            cursorMap.set(cursor.clientID, {
-                                position: cursor.position,
-                                userName: cursor.userName,
+                    case 'fingerChange':
+                        setOtherUserFingers((prev) => {
+                            const newFingers = new Map(prev);
+                            newFingers.set(data.clientID, {
+                                username: data.username,
+                                fingerUp: data.fingerUp,
                             });
+                            return newFingers;
                         });
-                        setCursors(cursorMap);
-                        break;
-                    }
-                    case 'cursor':
-                        setCursors((prev) =>
-                            new Map(prev).set(data.clientID, {
-                                position: data.position,
-                                userName: data.userName,
-                            })
-                        );
                         break;
                     case 'disconnect':
-                        setCursors((prev) => {
-                            const newCursors = new Map(prev);
-                            newCursors.delete(data.clientID);
-                            return newCursors;
+                        setOtherUserFingers((prev) => {
+                            const newFingers = new Map(prev);
+                            newFingers.delete(data.clientID);
+                            return newFingers;
                         });
                         break;
                 }
@@ -137,25 +169,6 @@ const CursorTracker = () => {
         };
     }, []);
 
-    const handleMouseMove = useCallback(
-        (e) => {
-            if (!ws || !clientID || ws.readyState !== WebSocket.OPEN) return;
-
-            const position = {
-                x: e.clientX,
-                y: e.clientY,
-            };
-
-            ws.send(
-                JSON.stringify({
-                    type: 'position',
-                    position,
-                })
-            );
-        },
-        [ws, clientID]
-    );
-
     if (error) {
         return (
             <div className='flex items-center justify-center h-screen'>
@@ -173,43 +186,23 @@ const CursorTracker = () => {
     }
 
     return (
-        <div
-            className='absolute inset-0 overflow-hidden'
-            onMouseMove={handleMouseMove}
-        >
-            <div className='absolute top-4 right-4 bg-white p-4 rounded-lg shadow'>
-                <div className='text-sm font-medium'>
-                    Session ID: {sessionID}
+        <main>
+            <Navbar value={value} />
+            <div className='flex'>
+                <div className='flex flex-col items-center justify-center h-screen'>
+                    <Textbox chidiya={`chidiya ${chidiya}`} />
+                    <Slider value={value} setValue={setValue} />
+                    <Timer seconds={seconds} />
                 </div>
-                <div className='text-xs text-gray-500 mt-1'>
-                    Share this URL to invite others
+                <div className='flex flex-col items-center justify-center h-screen'>
+                    <OtherUserFingerDisplay
+                        clientID={clientID}
+                        otherUserFingers={otherUserFingers}
+                    />
                 </div>
-                <button
-                    onClick={() =>
-                        navigator.clipboard.writeText(window.location.href)
-                    }
-                    className='mt-2 px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
-                >
-                    Copy URL
-                </button>
             </div>
-            <div className='absolute inset-0 w-full h-full bg-sky-100 -z-10'>
-                {Array.from(cursors.entries()).map(([id, data]) => (
-                    <div
-                        key={id}
-                        className='absolute dot pointer-events-none transition-all duration-100 z-0'
-                        style={{
-                            left: data.position.x,
-                            top: data.position.y,
-                            borderColor: `rgba(1,1,255,0.6)`,
-                            transform: 'translate(-50%, -50%)',
-                            position: 'absolute',
-                        }}
-                    ></div>
-                ))}
-            </div>
-        </div>
+        </main>
     );
 };
 
-export default CursorTracker;
+export default Game;

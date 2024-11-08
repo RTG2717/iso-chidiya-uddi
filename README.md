@@ -39,10 +39,16 @@ All frontend part is housed in `./frontend/`, ensure that you have all the pre-r
 
 ### Running the Code
 
-1. Start Development Server:
+1. Navigate to the backend folder. `[BASE_DIR]/frontend/`
+2. Start Development Server:
 
     ```
     npm run dev
+    ```
+3. Start Tailwind parallely:
+
+    ```
+    npm run watch
     ```
 
 ## Backend
@@ -51,8 +57,6 @@ Install all prerequisites in system.
 
 To run the current version of backend:
 
-1. Run navigate to the backend folder. `[BASE_DIR]/backend/`
-1. Run the command
-    > node server.js
-
-(Backend is still under development)
+1. Navigate to the backend folder. `[BASE_DIR]/backend/`
+2. Run the command
+    > npm run dev
