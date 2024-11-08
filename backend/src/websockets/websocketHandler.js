@@ -1,15 +1,22 @@
 const WebSocket = require('ws');
+const url = require('url');
 const sessionService = require('../services/session.service');
+const clientService = require('../services/clients.service');
 
 let activeConnections = [];
 
 const setupWebSocket = (server) => {
     const wss = new WebSocket.Server({ server, path: '/ws' });
 
-    wss.on('connection', (ws) => {
+    wss.on('connection', (ws, req) => {
         activeConnections.push(ws);
+        const params = url.parse(req.url, true).query;
+        const { sessionID, clientID } = params;
 
-        console.log('New Client joined!');
+        console.log(`New Client ${clientID} joined the session ${sessionID}!`);
+
+        // add the websocket connection info to clientID
+        clientService.updateUser(clientID, { ws });
         // Send a welcome message to the connected client
         ws.send(
             JSON.stringify({ message: 'Welcome to the WebSocket server!' })
