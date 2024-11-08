@@ -4,6 +4,7 @@ import Navbar from '../navbar';
 import Textbox from '../textbox';
 import Slider from '../slider';
 import Timer from '../timer';
+import OtherUserFingerDisplay from '../otherUserFingersDisplay';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:5000/ws';
@@ -39,7 +40,7 @@ const Game = () => {
 
     useEffect(() => {
         if (value < 69 && fingerUp !== false) setFingerUp(false);
-        else if (value < 69 && fingerUp !== true) setFingerUp(true);
+        else if (value >= 69 && fingerUp !== true) setFingerUp(true);
     }, [value]);
 
     useEffect(() => {
@@ -136,7 +137,6 @@ const Game = () => {
                             });
                             return newFingers;
                         });
-                        console.log('Other User Fingers:', otherUserFingers);
                         break;
                     case 'disconnect':
                         setOtherUserFingers((prev) => {
@@ -188,10 +188,18 @@ const Game = () => {
     return (
         <main>
             <Navbar value={value} />
-            <div className='flex flex-col items-center justify-center h-screen'>
-                <Textbox chidiya={`chidiya ${chidiya}`} />
-                <Slider value={value} setValue={setValue} />
-                <Timer seconds={seconds} />
+            <div className='flex'>
+                <div className='flex flex-col items-center justify-center h-screen'>
+                    <Textbox chidiya={`chidiya ${chidiya}`} />
+                    <Slider value={value} setValue={setValue} />
+                    <Timer seconds={seconds} />
+                </div>
+                <div className='flex flex-col items-center justify-center h-screen'>
+                    <OtherUserFingerDisplay
+                        clientID={clientID}
+                        otherUserFingers={otherUserFingers}
+                    />
+                </div>
             </div>
         </main>
     );
