@@ -29,6 +29,21 @@ const setupWebSocket = (server) => {
 
                 // Add logic functions in here
 
+                if (data.type === 'fingerChange') {
+                    const sessionUsers =
+                        sessionService.getSessionUsersbyID(sessionID);
+                    sessionUsers.forEach((userID) => {
+                        if (userID !== clientID) {
+                            user = clientService.getUser(userID);
+                            user.ws.send(
+                                JSON.stringify({
+                                    clientID,
+                                    fingerUp: data.fingerUp,
+                                })
+                            );
+                        }
+                    });
+                }
                 // no logic functions beyond this
             } catch (error) {
                 console.log('Error handling message', error);
