@@ -7,10 +7,8 @@ const createSession = (users = []) => {
     const createdAt = new Date().toISOString();
 
     let sessionCode = uuidv4().substring(0, 4).toUpperCase();
-    matchingCode = sessionsByCode.get(sessionCode);
 
-    while (matchingCode) {
-        matchingCode = sessionsByCode.get(sessionCode);
+    while (sessionsByCode.get(sessionCode)) {
         sessionCode = uuidv4().substring(0, 4).toUpperCase();
     }
 
