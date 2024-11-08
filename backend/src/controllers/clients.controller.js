@@ -6,7 +6,7 @@ const createUser = async (req, res) => {
 
         const user = await clientService.createUser(userName, sessionID);
 
-        res.status(200).json(user);
+        res.status(201).json(user);
     } catch (error) {
         if (error === 'Session not found') {
             console.error('Session not found');
