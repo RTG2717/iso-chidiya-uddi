@@ -7,14 +7,26 @@ const setupWebSocket = (server) => {
     const wss = new WebSocket.Server({ server, path: '/ws' });
 
     wss.on('connection', (ws) => {
-        console.log('New client connected.', ws);
         activeConnections.push(ws);
 
+        console.log('New Client joined!');
         // Send a welcome message to the connected client
         ws.send(
             JSON.stringify({ message: 'Welcome to the WebSocket server!' })
         );
 
+        ws.on('message', (message) => {
+            try {
+                const data = JSON.parse(message);
+                console.log(`Received message: ${data} from client`);
+
+                // Add logic functions in here
+
+                // no logic functions beyond this
+            } catch (error) {
+                console.log('Error handling message', error);
+            }
+        });
         // Handle WebSocket connection close
         ws.on('close', () => {
             console.log('Client disconnected');
