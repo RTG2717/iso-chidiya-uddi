@@ -15,6 +15,20 @@ const createUser = (userName, sessionID) => {
     return newClient;
 };
 
+const getUser = (clientID) => {
+    return clients.get(clientID) || null;
+};
+
+const updateUser = (clientID, updateData) => {
+    const clientSelection = clients.get(clientID);
+
+    const updatedClient = { ...clientSelection, ...updateData };
+    clients.set(clientID, updatedClient);
+    return updatedClient;
+};
+
 module.exports = {
     createUser,
+    updateUser,
+    getUser,
 };

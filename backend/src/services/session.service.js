@@ -29,6 +29,10 @@ const getSessionbyID = (sessionID) => {
     return sessionsByID.get(sessionID) || null;
 };
 
+const getSessionUsersbyID = (sessionID) => {
+    return sessionsByID.get(sessionID)?.users || null;
+};
+
 const getSessionbyCode = (sessionCode) => {
     return sessionsByCode.get(sessionCode) || null;
 };
@@ -47,7 +51,6 @@ const deleteSession = (sessionID) => {
 };
 
 const addClienttoSession = (clientID, sessionID) => {
-    console.log('Session Client combo: ', clientID, sessionID);
     const session = sessionsByID.get(sessionID);
     if (!session) {
         throw 'Session not found';
@@ -64,4 +67,5 @@ module.exports = {
     getSessionbyCode,
     deleteSession,
     addClienttoSession,
+    getSessionUsersbyID,
 };
