@@ -4,13 +4,10 @@ import JoinSessionForm from '../JoinSessionForm';
 import Input from '../Input';
 import AppTitle from '../AppTitle';
 import PageContainer from '../PageContainer';
-import axios from 'axios';
-
-const baseURL = import.meta.env.VITE_API_URL;
 
 const Home = () => {
-    const [isJoining, setIsJoining] = useState(false);
     const navigate = useNavigate();
+    const [isJoining, setIsJoining] = useState(false);
 
     const toggleLinkField = (e) => {
         e?.preventDefault();
@@ -20,11 +17,6 @@ const Home = () => {
 
     const handleCreate = async (e) => {
         e.preventDefault();
-
-        const { data: newSession } = await axios.post(
-            `${baseURL}/api/sessions`
-        );
-        console.log(newSession);
         navigate('/create-new-lobby');
     };
     return (
