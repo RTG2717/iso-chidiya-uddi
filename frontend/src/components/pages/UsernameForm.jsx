@@ -10,6 +10,7 @@ const UsernameForm = () => {
     const navigate = useNavigate();
     const { apiURL, session, setSession, clearSession, clearSessionCode } =
         useStore();
+    const { sessionCode } = useStore();
 
     const handleUpdateUserName = (e) => {
         console.log('name changed', e.target.value);
@@ -82,9 +83,18 @@ const UsernameForm = () => {
                             className='ml-2'
                         />
                     </div>
-                    <div className='text-center'>
-                        {session ? session : 'No session found yet'}
-                    </div>
+                    {localStorage.sl ? (
+                        <>
+                            <div className='text-center'>
+                                {session ? session : 'No session found yet'}
+                            </div>
+                            <div className='text-center'>
+                                {sessionCode
+                                    ? sessionCode
+                                    : 'No sessionCode found yet'}
+                            </div>{' '}
+                        </>
+                    ) : null}
                 </PageContainer>
             </form>
         </>
