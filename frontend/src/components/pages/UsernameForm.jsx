@@ -11,31 +11,44 @@ const UsernameForm = () => {
     const { apiURL, session, setSession, clearSession, clearSessionCode } =
         useStore();
     const { sessionCode } = useStore();
+    const { userName, setUserName, clearUserName } = useStore();
+    const { client, setClient, clearClient } = useStore();
 
     const handleUpdateUserName = (e) => {
         console.log('name changed', e.target.value);
         setUserName(e.target.value);
     };
-    const submitUserName = (e) => {
+    const submitUserName = async (e) => {
         e.preventDefault();
 
         // add script to call a post to submit username to backend
-        navigate('/track');
+
+        console.log('Create client Details', { session, userName });
+        const clientData = await axios.post(`${apiURL}/api/clients/`, {
+            sessionID: session,
+            userName,
+        });
+        setClient(clientData.data);
+        console.log(clientData);
+        navigate(`/playground`);
     };
 
     const handleBackButton = () => {
         console.log('Back Button Pressed');
         clearSession();
         clearSessionCode();
+        clearUserName();
+        clearClient();
         navigate(-1);
     };
 
     useEffect(() => {
         const getSession = async () => {
             let res = null;
-            let sessionCode = null;
             if (sessionCode) {
-                // change session to sessionCode and add the var to store.
+                res = await axios.get(
+                    `${apiURL}/api/sessions/code/${sessionCode}`
+                );
                 // logic here if sessionCode is available.
             } else {
                 res = await axios.post(`${apiURL}/api/sessions/`);
