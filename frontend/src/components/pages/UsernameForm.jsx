@@ -8,7 +8,8 @@ import axios from 'axios';
 
 const UsernameForm = () => {
     const navigate = useNavigate();
-    const { apiURL, session, setSession } = useStore();
+    const { apiURL, session, setSession, clearSession, clearSessionCode } =
+        useStore();
 
     const handleUpdateUserName = (e) => {
         console.log('name changed', e.target.value);
@@ -19,6 +20,13 @@ const UsernameForm = () => {
 
         // add script to call a post to submit username to backend
         navigate('/track');
+    };
+
+    const handleBackButton = () => {
+        console.log('Back Button Pressed');
+        clearSession();
+        clearSessionCode();
+        navigate(-1);
     };
 
     useEffect(() => {
@@ -69,7 +77,7 @@ const UsernameForm = () => {
                         />
                         <Input
                             type='button'
-                            onClick={() => navigate(-1)}
+                            onClick={handleBackButton}
                             value='Back'
                             className='ml-2'
                         />
