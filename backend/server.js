@@ -19,7 +19,8 @@ app.use(
 app.use(express.json());
 
 // In-memory storage
-const sessions = new Map();
+const sessionsByID = new Map();
+const sessionsByCode = new Map();
 const clients = new Map();
 
 // Create HTTP server explicitly
@@ -45,14 +46,41 @@ app.get('/', (req, res) => {
 app.post('/api/sessions', (req, res) => {
     try {
         const sessionID = uuidv4();
-        sessions.set(sessionID, {
+        let sessionCode = uuidv4().substring(0, 4).toUpperCase();
+        matchingCode = sessionsByCode.get(sessionCode);
+
+        while (matchingCode) {
+            matchingCode = sessionsByCode.get(sessionCode);
+            sessionCode = uuidv4().substring(0, 4).toUpperCase();
+        }
+
+        sessionsByID.set(sessionID, {
             sessionID,
+            sessionCode,
+            users: [],
+            createdAt: new Date(),
+        });
+        sessionsByCode.set(sessionCode, {
+            sessionID,
+            sessionCode,
             users: [],
             createdAt: new Date(),
         });
         res.json({
             sessionID,
+            sessionCode,
         });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/sessions_by_code/:sessionCode', (req, res) => {
+    try {
+        const session = sessionsByCode.get(req.params.sessionCode);
+        if (!session)
+            return res.status(404).json({ error: 'Session not found' });
+        res.json(session);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -60,7 +88,7 @@ app.post('/api/sessions', (req, res) => {
 
 app.get('/api/sessions/:sessionID', (req, res) => {
     try {
-        const session = sessions.get(req.params.sessionID);
+        const session = sessionsByID.get(req.params.sessionID);
         if (!session)
             return res.status(404).json({ error: 'Session not found' });
         res.json(session);
@@ -77,10 +105,6 @@ wss.on('connection', (ws, req) => {
     const params = new URL(req.url, 'http://localhost:5000').searchParams;
     const sessionID = params.get('sessionID');
     const username = params.get('username');
-
-    console.log(
-        `Client connected: ${clientID}, Session: ${sessionID}, Username: ${username}`
-    );
 
     // Store client information
     clients.set(clientID, {
@@ -103,7 +127,6 @@ wss.on('connection', (ws, req) => {
     ws.on('message', (message) => {
         try {
             const data = JSON.parse(message);
-            console.log(`Received message from ${clientID}:`, data.type);
 
             if (data.type === 'position') {
                 // Update stored position

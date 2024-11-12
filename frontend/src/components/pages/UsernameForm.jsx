@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import Input from '../Input';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AppTitle from '../AppTitle';
 import PageContainer from '../PageContainer';
 import useStore from '../../store';
 import axios from 'axios';
 
 const UsernameForm = () => {
-    const [userName, setUserName] = useState('');
     const navigate = useNavigate();
     const { apiURL, session, setSession } = useStore();
 

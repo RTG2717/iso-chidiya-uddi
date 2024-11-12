@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import JoinSessionForm from '../JoinSessionForm';
 import Input from '../Input';
 import AppTitle from '../AppTitle';
@@ -7,8 +8,12 @@ import PageContainer from '../PageContainer';
 import axios from 'axios';
 
 const baseURL = import.meta.env.VITE_API_URL;
+import axios from 'axios';
+
+const baseURL = import.meta.env.VITE_API_URL;
 
 const Home = () => {
+    const navigate = useNavigate();
     const [isJoining, setIsJoining] = useState(false);
     const navigate = useNavigate();
 
