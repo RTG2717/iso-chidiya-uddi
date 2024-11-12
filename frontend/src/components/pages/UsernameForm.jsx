@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Input from '../Input';
 import { useNavigate } from 'react-router-dom';
 import AppTitle from '../AppTitle';
 import PageContainer from '../PageContainer';
+import useStore from '../../store';
+import axios from 'axios';
 
 const UsernameForm = () => {
     const [userName, setUserName] = useState('');
     const navigate = useNavigate();
+    const { apiURL, session, setSession } = useStore();
 
     const handleUpdateUserName = (e) => {
         console.log('name changed', e.target.value);
@@ -18,6 +21,24 @@ const UsernameForm = () => {
         // add script to call a post to submit username to backend
         navigate('/track');
     };
+
+    useEffect(() => {
+        const getSession = async () => {
+            let res = null;
+            let sessionCode = null;
+            if (sessionCode) {
+                // change session to sessionCode and add the var to store.
+                // logic here if sessionCode is available.
+            } else {
+                res = await axios.post(`${apiURL}/api/sessions/`);
+            }
+            return res.data;
+        };
+        getSession().then((result) => {
+            setSession(result?.sessionID);
+            console.log('data', result);
+        });
+    }, []);
     return (
         <>
             <form>
@@ -53,6 +74,9 @@ const UsernameForm = () => {
                             value='Back'
                             className='ml-2'
                         />
+                    </div>
+                    <div className='text-center'>
+                        {session ? session : 'No session found yet'}
                     </div>
                 </PageContainer>
             </form>

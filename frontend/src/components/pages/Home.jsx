@@ -20,11 +20,6 @@ const Home = () => {
 
     const handleCreate = async (e) => {
         e.preventDefault();
-
-        const { data: newSession } = await axios.post(
-            `${baseURL}/api/sessions`
-        );
-        console.log(newSession);
         navigate('/create-new-lobby');
     };
     return (
