@@ -3,16 +3,16 @@ import Input from '../Input';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AppTitle from '../AppTitle';
 import PageContainer from '../PageContainer';
-import useStore from '../../store';
+import { useAPIStore, useSessionStore, useUserStore } from '../../store/stores';
 import axios from 'axios';
 
 const UsernameForm = () => {
     const navigate = useNavigate();
-    const { apiURL, session, setSession, clearSession, clearSessionCode } =
-        useStore();
-    const { sessionCode } = useStore();
-    const { userName, setUserName, clearUserName } = useStore();
-    const { client, setClient, clearClient } = useStore();
+    const { session, sessionCode, setSession, clearSession, clearSessionCode } =
+        useSessionStore();
+    const { apiURL } = useAPIStore();
+    const { userName, setUserName, setClient, clearUserName, clearClient } =
+        useUserStore();
 
     const handleUpdateUserName = (e) => {
         console.log('name changed', e.target.value);
@@ -25,7 +25,7 @@ const UsernameForm = () => {
 
         console.log('Create client Details', { session, userName });
         const clientData = await axios.post(`${apiURL}/api/clients/`, {
-            sessionID: session,
+            sessionID: session.sessionID,
             userName,
         });
         setClient(clientData.data);
@@ -56,7 +56,7 @@ const UsernameForm = () => {
             return res.data;
         };
         getSession().then((result) => {
-            setSession(result?.sessionID);
+            setSession(result);
             console.log('data', result);
         });
     }, []);
@@ -99,7 +99,9 @@ const UsernameForm = () => {
                     {localStorage.sl ? (
                         <>
                             <div className='text-center'>
-                                {session ? session : 'No session found yet'}
+                                {session
+                                    ? session.sessionID
+                                    : 'No session found yet'}
                             </div>
                             <div className='text-center'>
                                 {sessionCode
