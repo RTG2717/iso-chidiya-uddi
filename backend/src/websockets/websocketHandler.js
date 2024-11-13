@@ -17,6 +17,13 @@ const setupWebSocket = (server) => {
 
         // add the websocket connection info to clientID
         clientService.updateUser(clientID, { ws });
+        // update users to frontend by sending a message
+        ws.send(
+            JSON.stringify({
+                type: 'init',
+                users: sessionService.getSessionUsersbyID(sessionID),
+            })
+        );
         // Send a welcome message to the connected client
         ws.send(
             JSON.stringify({ message: 'Welcome to the WebSocket server!' })
@@ -37,6 +44,7 @@ const setupWebSocket = (server) => {
                             user = clientService.getUser(userID);
                             user.ws.send(
                                 JSON.stringify({
+                                    type: 'fingerChange',
                                     clientID,
                                     fingerUp: data.fingerUp,
                                 })
