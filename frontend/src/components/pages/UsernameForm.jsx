@@ -1,23 +1,65 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Input from '../Input';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AppTitle from '../AppTitle';
 import PageContainer from '../PageContainer';
+import useStore from '../../store';
+import axios from 'axios';
 
 const UsernameForm = () => {
-    const [userName, setUserName] = useState('');
     const navigate = useNavigate();
+    const { apiURL, session, setSession, clearSession, clearSessionCode } =
+        useStore();
+    const { sessionCode } = useStore();
+    const { userName, setUserName, clearUserName } = useStore();
+    const { client, setClient, clearClient } = useStore();
 
     const handleUpdateUserName = (e) => {
         console.log('name changed', e.target.value);
         setUserName(e.target.value);
     };
-    const submitUserName = (e) => {
+    const submitUserName = async (e) => {
         e.preventDefault();
 
         // add script to call a post to submit username to backend
-        navigate('/track');
+
+        console.log('Create client Details', { session, userName });
+        const clientData = await axios.post(`${apiURL}/api/clients/`, {
+            sessionID: session,
+            userName,
+        });
+        setClient(clientData.data);
+        console.log(clientData);
+        navigate(`/playground`);
     };
+
+    const handleBackButton = () => {
+        console.log('Back Button Pressed');
+        clearSession();
+        clearSessionCode();
+        clearUserName();
+        clearClient();
+        navigate(-1);
+    };
+
+    useEffect(() => {
+        const getSession = async () => {
+            let res = null;
+            if (sessionCode) {
+                res = await axios.get(
+                    `${apiURL}/api/sessions/code/${sessionCode}`
+                );
+                // logic here if sessionCode is available.
+            } else {
+                res = await axios.post(`${apiURL}/api/sessions/`);
+            }
+            return res.data;
+        };
+        getSession().then((result) => {
+            setSession(result?.sessionID);
+            console.log('data', result);
+        });
+    }, []);
     return (
         <>
             <form>
@@ -49,11 +91,23 @@ const UsernameForm = () => {
                         />
                         <Input
                             type='button'
-                            onClick={() => navigate(-1)}
+                            onClick={handleBackButton}
                             value='Back'
                             className='ml-2'
                         />
                     </div>
+                    {localStorage.sl ? (
+                        <>
+                            <div className='text-center'>
+                                {session ? session : 'No session found yet'}
+                            </div>
+                            <div className='text-center'>
+                                {sessionCode
+                                    ? sessionCode
+                                    : 'No sessionCode found yet'}
+                            </div>{' '}
+                        </>
+                    ) : null}
                 </PageContainer>
             </form>
         </>
