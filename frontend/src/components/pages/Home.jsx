@@ -4,6 +4,7 @@ import JoinSessionForm from '../JoinSessionForm';
 import Input from '../Input';
 import AppTitle from '../AppTitle';
 import PageContainer from '../PageContainer';
+import PrivateDisplay from '../PrivateDisplay';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -38,6 +39,19 @@ const Home = () => {
                     className='mt-2'
                     value={isJoining ? 'Close' : 'Join an exiting Lobby'}
                 />
+            </div>
+            <div className='mt-4 text-center'>
+                <PrivateDisplay>
+                    <Input
+                        type='button'
+                        onClick={() => {
+                            localStorage.clear();
+                            localStorage.sl = true;
+                            console.log('cleared');
+                        }}
+                        value='Clear Memory'
+                    />
+                </PrivateDisplay>
             </div>
         </PageContainer>
     );
