@@ -52,6 +52,48 @@ const setupWebSocket = (server) => {
                         }
                     });
                 }
+                if (data.type === 'addUser') {
+                    const sessionUsers =
+                        sessionService.getSessionUsersbyID(sessionID);
+                    sessionUsers.forEach((userID) => {
+                        if (userID !== clientID) {
+                            user = clientService.getUser(userID);
+                            user.ws.send(
+                                JSON.stringify({
+                                    type: 'addUser',
+                                    users: sessionService.getSessionUsersbyID(
+                                        sessionID
+                                    ),
+                                })
+                            );
+                        }
+                    });
+                }
+                if (data.type === 'removeUser') {
+                    const sessionUsers =
+                        sessionService.getSessionUsersbyID(sessionID);
+                    sessionUsers.forEach((userID) => {
+                        if (userID === data.clientID) {
+                            sessionService.removeClientfromSession(
+                                data.clientID,
+                                sessionID
+                            );
+                        } else {
+                            user = clientService.getUser(userID);
+                            user.ws.send(
+                                JSON.stringify({
+                                    type: 'removeUser',
+                                    users: sessionService
+                                        .getSessionUsersbyID(sessionID)
+                                        .filter(
+                                            (user) =>
+                                                user.clientID !== data.clientID
+                                        ),
+                                })
+                            );
+                        }
+                    });
+                }
                 // no logic functions beyond this
             } catch (error) {
                 console.log('Error handling message', error);

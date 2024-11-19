@@ -61,6 +61,17 @@ const addClienttoSession = (clientID, sessionID) => {
     return session;
 };
 
+const removeClientfromSession = (clientID, sessionID) => {
+    const session = sessionsByID.get(sessionID);
+    if (!session) {
+        throw 'Session not found';
+    }
+
+    session.users = session.users.filter((user) => user !== clientID);
+
+    return session;
+};
+
 module.exports = {
     createSession,
     getSessionbyID,
