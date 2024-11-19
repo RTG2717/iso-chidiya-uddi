@@ -5,6 +5,7 @@ import AppTitle from '../AppTitle';
 import PageContainer from '../PageContainer';
 import { useAPIStore, useSessionStore, useUserStore } from '../../store/stores';
 import axios from 'axios';
+import PrivateDisplay from '../PrivateDisplay';
 
 const UsernameForm = () => {
     const navigate = useNavigate();
@@ -96,20 +97,18 @@ const UsernameForm = () => {
                             className='ml-2'
                         />
                     </div>
-                    {localStorage.sl ? (
-                        <>
-                            <div className='text-center'>
-                                {session
-                                    ? session.sessionID
-                                    : 'No session found yet'}
-                            </div>
-                            <div className='text-center'>
-                                {sessionCode
-                                    ? sessionCode
-                                    : 'No sessionCode found yet'}
-                            </div>{' '}
-                        </>
-                    ) : null}
+                    <PrivateDisplay>
+                        <div className='text-center'>
+                            {session
+                                ? session.sessionID
+                                : 'No session found yet'}
+                        </div>
+                        <div className='text-center'>
+                            {session
+                                ? session?.sessionCode
+                                : 'No sessionCode found yet'}
+                        </div>
+                    </PrivateDisplay>
                 </PageContainer>
             </form>
         </>
