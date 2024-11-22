@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 // More specific CORS configuration
 app.use(
     cors({
-        origin: [process.env.REACT_APP, 'http://localhost:3000'], // Your React app's URL
+        origin: [process.env.REACT_APP], // Your React app's URL
         methods: ['GET', 'POST'],
         credentials: true,
     })
@@ -19,8 +19,7 @@ app.use(
 app.use(express.json());
 
 // In-memory storage
-const sessionsByID = new Map();
-const sessionsByCode = new Map();
+const sessions = new Map();
 const clients = new Map();
 
 // Create HTTP server explicitly
@@ -46,41 +45,14 @@ app.get('/', (req, res) => {
 app.post('/api/sessions', (req, res) => {
     try {
         const sessionID = uuidv4();
-        let sessionCode = uuidv4().substring(0, 4).toUpperCase();
-        matchingCode = sessionsByCode.get(sessionCode);
-
-        while (matchingCode) {
-            matchingCode = sessionsByCode.get(sessionCode);
-            sessionCode = uuidv4().substring(0, 4).toUpperCase();
-        }
-
-        sessionsByID.set(sessionID, {
+        sessions.set(sessionID, {
             sessionID,
-            sessionCode,
-            users: [],
-            createdAt: new Date(),
-        });
-        sessionsByCode.set(sessionCode, {
-            sessionID,
-            sessionCode,
             users: [],
             createdAt: new Date(),
         });
         res.json({
             sessionID,
-            sessionCode,
         });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.get('/api/sessions_by_code/:sessionCode', (req, res) => {
-    try {
-        const session = sessionsByCode.get(req.params.sessionCode);
-        if (!session)
-            return res.status(404).json({ error: 'Session not found' });
-        res.json(session);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -88,7 +60,7 @@ app.get('/api/sessions_by_code/:sessionCode', (req, res) => {
 
 app.get('/api/sessions/:sessionID', (req, res) => {
     try {
-        const session = sessionsByID.get(req.params.sessionID);
+        const session = sessions.get(req.params.sessionID);
         if (!session)
             return res.status(404).json({ error: 'Session not found' });
         res.json(session);
@@ -106,12 +78,16 @@ wss.on('connection', (ws, req) => {
     const sessionID = params.get('sessionID');
     const username = params.get('username');
 
+    console.log(
+        `Client connected: ${clientID}, Session: ${sessionID}, Username: ${username}`
+    );
+
     // Store client information
     clients.set(clientID, {
         ws,
         sessionID,
         username,
-        position: { x: 0, y: 0 },
+        fingerUp: false,
     });
 
     // Send immediate confirmation
@@ -127,10 +103,11 @@ wss.on('connection', (ws, req) => {
     ws.on('message', (message) => {
         try {
             const data = JSON.parse(message);
+            console.log(`Received message from ${clientID}:`, data.type);
 
             if (data.type === 'position') {
                 // Update stored position
-                clients.get(clientID).position = data.position;
+                clients.get(clientID).fingerUp = data.fingerUp;
 
                 // Broadcast to others in same session
                 clients.forEach((client, id) => {
@@ -141,10 +118,10 @@ wss.on('connection', (ws, req) => {
                     ) {
                         client.ws.send(
                             JSON.stringify({
-                                type: 'cursor',
+                                type: 'fingerChange',
                                 clientID,
                                 username,
-                                position: data.position,
+                                fingerUp: data.fingerUp,
                             })
                         );
                     }

@@ -1,23 +1,66 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Input from '../Input';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AppTitle from '../AppTitle';
 import PageContainer from '../PageContainer';
+import { useAPIStore, useSessionStore, useUserStore } from '../../store/stores';
+import axios from 'axios';
+import PrivateDisplay from '../PrivateDisplay';
 
 const UsernameForm = () => {
-    const [userName, setUserName] = useState('');
     const navigate = useNavigate();
+    const { session, sessionCode, setSession, clearSession, clearSessionCode } =
+        useSessionStore();
+    const { apiURL } = useAPIStore();
+    const { userName, setUserName, setClient, clearUserName, clearClient } =
+        useUserStore();
 
     const handleUpdateUserName = (e) => {
         console.log('name changed', e.target.value);
         setUserName(e.target.value);
     };
-    const submitUserName = (e) => {
+    const submitUserName = async (e) => {
         e.preventDefault();
 
         // add script to call a post to submit username to backend
-        navigate('/track');
+
+        console.log('Create client Details', { session, userName });
+        const clientData = await axios.post(`${apiURL}/api/clients/`, {
+            sessionID: session.sessionID,
+            userName,
+        });
+        setClient(clientData.data);
+        console.log(clientData);
+        navigate(`/playground`);
     };
+
+    const handleBackButton = () => {
+        console.log('Back Button Pressed');
+        clearSession();
+        clearSessionCode();
+        clearUserName();
+        clearClient();
+        navigate(-1);
+    };
+
+    useEffect(() => {
+        const getSession = async () => {
+            let res = null;
+            if (sessionCode) {
+                res = await axios.get(
+                    `${apiURL}/api/sessions/code/${sessionCode}`
+                );
+                // logic here if sessionCode is available.
+            } else {
+                res = await axios.post(`${apiURL}/api/sessions/`);
+            }
+            return res.data;
+        };
+        getSession().then((result) => {
+            setSession(result);
+            console.log('data', result);
+        });
+    }, []);
     return (
         <>
             <form>
@@ -49,11 +92,23 @@ const UsernameForm = () => {
                         />
                         <Input
                             type='button'
-                            onClick={() => navigate(-1)}
+                            onClick={handleBackButton}
                             value='Back'
                             className='ml-2'
                         />
                     </div>
+                    <PrivateDisplay>
+                        <div className='text-center'>
+                            {session
+                                ? session.sessionID
+                                : 'No session found yet'}
+                        </div>
+                        <div className='text-center'>
+                            {session
+                                ? session?.sessionCode
+                                : 'No sessionCode found yet'}
+                        </div>
+                    </PrivateDisplay>
                 </PageContainer>
             </form>
         </>

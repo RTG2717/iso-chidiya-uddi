@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import JoinSessionForm from '../JoinSessionForm';
 import Input from '../Input';
 import AppTitle from '../AppTitle';
 import PageContainer from '../PageContainer';
+import PrivateDisplay from '../PrivateDisplay';
 
 const Home = () => {
+    const navigate = useNavigate();
     const [isJoining, setIsJoining] = useState(false);
 
     const toggleLinkField = (e) => {
@@ -13,14 +15,21 @@ const Home = () => {
 
         setIsJoining(!isJoining);
     };
+
+    const handleCreate = async (e) => {
+        e.preventDefault();
+        navigate('/create-new-lobby');
+    };
     return (
         <PageContainer>
             <AppTitle />
             <div className='text-3xl text-center'>Home Page</div>
             <div className='mt-10 text-center'>
-                <Link to='/create-new-lobby'>
-                    <Input type='button' value='Create a new Lobby' />
-                </Link>
+                <Input
+                    type='button'
+                    onClick={handleCreate}
+                    value='Create a new Lobby'
+                />
             </div>
             <div className='mt-4 flex-1 text-center'>
                 <JoinSessionForm isJoining={isJoining} />
@@ -30,6 +39,19 @@ const Home = () => {
                     className='mt-2'
                     value={isJoining ? 'Close' : 'Join an exiting Lobby'}
                 />
+            </div>
+            <div className='mt-4 text-center'>
+                <PrivateDisplay>
+                    <Input
+                        type='button'
+                        onClick={() => {
+                            localStorage.clear();
+                            localStorage.sl = true;
+                            console.log('cleared');
+                        }}
+                        value='Clear Memory'
+                    />
+                </PrivateDisplay>
             </div>
         </PageContainer>
     );
