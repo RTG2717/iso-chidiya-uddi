@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import useStore from '../store';
+import { useAPIStore, useSessionStore } from '../store/stores';
 import Input from './Input';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const JoinSessionForm = ({ isJoining }) => {
-    const { apiURL, sessionCode, setSessionCode } = useStore();
+    const { sessionCode, setSessionCode } = useSessionStore();
+    const { apiURL } = useAPIStore();
     const inputTextCSS =
         'px-2 py-1 w-24 rounded-md bg-white placeholder bg-indigo-50 mx-2';
 
