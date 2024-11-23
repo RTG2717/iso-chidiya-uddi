@@ -1,5 +1,6 @@
 const sessionsByID = new Map();
 const sessionsByCode = new Map();
+const { initChidyas } = require('./chidiya.service');
 const { v4: uuidv4 } = require('uuid');
 
 const createSession = (users = []) => {
@@ -17,10 +18,13 @@ const createSession = (users = []) => {
         sessionCode,
         users,
         createdAt,
+        gameStarted: false,
     };
 
     sessionsByID.set(sessionID, newSession);
     sessionsByCode.set(sessionCode, newSession);
+
+    initChidyas(sessionID);
 
     return newSession;
 };
