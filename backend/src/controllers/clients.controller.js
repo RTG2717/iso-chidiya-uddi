@@ -6,14 +6,14 @@ const createUser = async (req, res) => {
 
         const user = await clientService.createUser(userName, sessionID);
 
-        res.status(201).json(user);
+        return res.status(201).json(user);
     } catch (error) {
         if (error === 'Session not found') {
             console.error('Session not found');
-            res.status(404).json({ error: 'Requested client not found' });
+            return res.status(404).json({ error: 'Requested client not found' });
         } else {
             console.error('Unexpected error occurred', error);
-            res.status(500).json({ error: 'Internal Server Error' });
+            return res.status(500).json({ error: 'Internal Server Error' });
         }
     }
 };
@@ -24,13 +24,13 @@ const getUser = async (req, res) => {
         console.log(clientID);
         const client = await clientService.getUser(clientID);
         if (client) {
-            res.status(200).json(client);
+            return res.status(200).json(client);
         } else {
-            res.status(404).json({ message: 'Client not found' });
+            return res.status(404).json({ message: 'Client not found' });
         }
     } catch (error) {
         console.error('Error occurred while trying to get user: ', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
@@ -44,13 +44,13 @@ const updateUser = async (req, res) => {
             updateData
         );
         if (updateUser) {
-            res.status(200).json(updatedUser);
+            return res.status(200).json(updatedUser);
         } else {
-            res.status(404).json({ message: 'Session not found' });
+            return res.status(404).json({ message: 'Session not found' });
         }
     } catch (error) {
         console.error('Error occurred while trying to update user: ', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
