@@ -62,7 +62,7 @@ const Playground = () => {
     }, [myFinger]);
 
     useEffect(() => {
-        if (sliderValue >= 70 && !myFinger.get(client.clientID)) {
+        if (sliderValue >= 69 && !myFinger.get(client.clientID)) {
             const newFinger = new Map(myFinger);
             newFinger.set(client.clientID, true);
             setMyFinger(newFinger);
@@ -125,6 +125,7 @@ const Playground = () => {
         <PageContainer>
             PlayGround{' '}
             {connecting ? 'Connecting' : `Joined as ${client.userName}`}
+            <div>Code: {session.sessionCode}</div>
             <div className='flex'>
                 <div className='flex justify-center'>
                     <Textbox chidiya={`chidiya`} />
